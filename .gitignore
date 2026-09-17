@@ -1,0 +1,7 @@
+node_modules
+dist
+public
+.npm-cache
+.env
+.env.*
+!.env.example
