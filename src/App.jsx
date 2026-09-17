@@ -37,7 +37,6 @@ function App() {
         <h1 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">{result.name}</h1>
         <p className="mt-2 text-pink-300">{result.anime}</p>
         <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-200">{result.description}</p>
-        <p className="mt-4 text-sm text-slate-400">Картинка хранится прямо в приложении.</p>
         <button className="mt-8 rounded-2xl bg-gradient-to-r from-pink-500 to-violet-500 px-6 py-4 font-bold shadow-lg shadow-pink-950/40 transition hover:scale-[1.02]" onClick={restart} type="button">Пройти ещё раз</button>
       </article> : <>
         <div className="mb-8 flex items-center justify-between text-sm font-medium text-slate-300"><span className="rounded-full border border-white/15 bg-white/5 px-4 py-2">Anime quiz</span><span>Вопрос {questionIndex + 1} из {quizData.questions.length}</span></div>
