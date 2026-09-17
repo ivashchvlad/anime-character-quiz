@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { characters, quizData } from './quizData'
 
 function App() {
@@ -6,19 +6,9 @@ function App() {
   const [questionIndex, setQuestionIndex] = useState(0)
   const [scores, setScores] = useState({})
   const [finished, setFinished] = useState(false)
-  const [imageUrl, setImageUrl] = useState('')
   const [imageFailed, setImageFailed] = useState(false)
   const question = quizData.questions[questionIndex]
   const result = useMemo(() => characters.reduce((best, character) => ((scores[character.id] || 0) > (scores[best.id] || 0) ? character : best), characters[0]), [scores])
-
-  useEffect(() => {
-    if (!finished) return
-    setImageUrl(''); setImageFailed(false)
-    fetch(result.imageApi)
-      .then((response) => response.ok ? response.json() : Promise.reject())
-      .then((data) => setImageUrl(data.data.images.jpg.large_image_url || data.data.images.jpg.image_url))
-      .catch(() => setImageFailed(true))
-  }, [finished, result])
 
   const chooseAnswer = (option) => {
     setScores((current) => Object.entries(option.scores).reduce((next, [id, points]) => ({ ...next, [id]: (next[id] || 0) + points }), current))
@@ -26,7 +16,7 @@ function App() {
     else setQuestionIndex((current) => current + 1)
   }
 
-  const restart = () => { setQuestionIndex(0); setScores({}); setFinished(false); setStarted(false) }
+  const restart = () => { setQuestionIndex(0); setScores({}); setFinished(false); setStarted(false); setImageFailed(false) }
 
   return <main className="min-h-screen overflow-hidden bg-slate-950 text-white">
     <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(236,72,153,.24),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(99,102,241,.3),_transparent_36%)]" />
@@ -42,12 +32,12 @@ function App() {
       </article> : finished ? <article className="rounded-3xl border border-white/10 bg-white/8 p-6 text-center shadow-2xl shadow-violet-950/40 backdrop-blur sm:p-10">
         <p className="text-sm font-semibold tracking-[0.18em] text-pink-300 uppercase">Твой результат</p>
         <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center overflow-hidden rounded-full border-4 border-pink-400/60 bg-slate-900 text-7xl shadow-xl shadow-pink-950/30">
-          {imageUrl && !imageFailed ? <img className="h-full w-full object-cover" src={imageUrl} alt={result.name} onError={() => setImageFailed(true)} /> : result.emoji}
+          {result.image && !imageFailed ? <img className="h-full w-full object-cover" src={result.image} alt={result.name} onError={() => setImageFailed(true)} /> : result.emoji}
         </div>
         <h1 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">{result.name}</h1>
         <p className="mt-2 text-pink-300">{result.anime}</p>
         <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-200">{result.description}</p>
-        <p className="mt-4 text-sm text-slate-400">Картинка загружается из MyAnimeList через Jikan.</p>
+        <p className="mt-4 text-sm text-slate-400">Картинка хранится прямо в приложении.</p>
         <button className="mt-8 rounded-2xl bg-gradient-to-r from-pink-500 to-violet-500 px-6 py-4 font-bold shadow-lg shadow-pink-950/40 transition hover:scale-[1.02]" onClick={restart} type="button">Пройти ещё раз</button>
       </article> : <>
         <div className="mb-8 flex items-center justify-between text-sm font-medium text-slate-300"><span className="rounded-full border border-white/15 bg-white/5 px-4 py-2">Anime quiz</span><span>Вопрос {questionIndex + 1} из {quizData.questions.length}</span></div>
